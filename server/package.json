@@ -10,6 +10,8 @@
     "@typegoose/typegoose": "^9.9.0",
     "argon2": "^0.28.5",
     "config": "^3.3.7",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dayjs": "^1.11.3",
     "dotenv": "^16.0.1",
     "express": "^5.0.0-beta.1",
