@@ -12,7 +12,7 @@ import logger from "../utils/loggor";
 
 const pickUpString =
   "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-const nanoid = customAlphabet(pickUpString, 10);
+export const nanoidCustom = customAlphabet(pickUpString, 10);
 
 @modelOptions({
   schemaOptions: {
@@ -43,7 +43,7 @@ export class User {
   @prop({ default: false })
   profileVerified: boolean;
 
-  @prop({ default: () => `${nanoid()}-D${new Date()}` })
+  @prop({ default: () => `${nanoidCustom()}-D${new Date()}` })
   validationCode: string;
 
   async validatePassword(this: DocumentType<User>, passwordOnReq: string) {

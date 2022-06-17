@@ -15,3 +15,21 @@ export const findOneUserAndUpdate = async (
 
 export const DeleteUser = async (query: FilterQuery<User>) =>
   await UserModel.deleteOne(query);
+
+export const validUserPassword = async ({
+  email,
+  password,
+}: {
+  email: User["email"];
+  password: User["password"];
+}) => {
+  try {
+    const user = await UserModel.findOne({ email });
+    if (!user) return false;
+    const isValid = await user.validatePassword(password);
+
+    return !isValid ? false : true;
+  } catch (err: any) {
+    return false;
+  }
+};
