@@ -27,7 +27,7 @@ export const registerUserWithPassHandler = async (
         newUser._id as string
       }&verifyCode=${newUser.validationCode as string}`,
     });
-    await sendEmail(payload);
+    const emailSent = await sendEmail(payload);
     return res.status(201).send("User created successfully!");
   } catch (err: any) {
     if (err.code === 11000)
@@ -64,8 +64,13 @@ export const reqForLinkHandler = async (
         user._id as string
       }&verifyCode=${user.validationCode as string}`,
     });
-    await sendEmail(payload);
-    return res.status(StatusCodes.ACCEPTED).send("Email has been sent!");
+    const emailSent = await sendEmail(payload);
+    if (emailSent)
+      return res.status(StatusCodes.ACCEPTED).send("Email has been sent!");
+    else
+      return res
+        .status(StatusCodes.REQUEST_TIMEOUT)
+        .send("Couldn't send email!");
   } catch (err: any) {
     return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }

@@ -1,26 +1,30 @@
 import jwt from "jsonwebtoken";
 import config from "config";
 
-const accTokenPriKey = config.get<string>("accTokenPriKey");
-const accTokenPubKey = config.get<string>("accTokenPubKey");
-const refTokenPriKey = config.get<string>("refTokenPriKey");
-const refTokenPubKey = config.get<string>("refTokenPubKey");
+const decodeStringBase64 = (key: string): string =>
+  Buffer.from(key, "base64").toString("ascii");
+
+const accTokenPriKey = decodeStringBase64(config.get<string>("accTokenPriKey"));
+
+const accTokenPubKey = decodeStringBase64(config.get<string>("accTokenPubKey"));
+const refTokenPriKey = decodeStringBase64(config.get<string>("refTokenPriKey"));
+const refTokenPubKey = decodeStringBase64(config.get<string>("refTokenPubKey"));
 
 export const signJwt = ({
-  payload,
+  tokenPayload,
   isAccToken,
   options,
 }: {
-  payload: Object;
-  isAccToken?: boolean;
+  tokenPayload: Object;
+  isAccToken: boolean;
   options?: jwt.SignOptions | undefined;
 }) =>
   isAccToken
-    ? jwt.sign(payload, accTokenPriKey, {
+    ? jwt.sign(tokenPayload, accTokenPriKey, {
         ...(options && options),
         algorithm: "RS256",
       })
-    : jwt.sign(payload, refTokenPriKey, {
+    : jwt.sign(tokenPayload, refTokenPriKey, {
         ...(options && options),
         algorithm: "RS256",
       });
@@ -30,7 +34,7 @@ export const verifyJwt = ({
   isAccToken,
 }: {
   token: string;
-  isAccToken?: boolean;
+  isAccToken: boolean;
 }) => {
   try {
     const decoded = isAccToken
