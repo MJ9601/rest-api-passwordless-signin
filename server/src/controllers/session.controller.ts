@@ -29,7 +29,7 @@ export const verifyUserEmailHandler = async (
 
     const updatedUser = await findOneUserAndUpdate(
       { _id: userId },
-      { profileVerified: true },
+      { profileVerified: true, $set: { validationCode: null } },
       { new: true }
     );
     return res.status(StatusCodes.ACCEPTED).send("Email has been verified!");
@@ -47,7 +47,7 @@ export const updateUserPassHandler = async (
   >,
   res: Response
 ) => {
-  const { oldPassword, newPassword } = req.body;
+  const { newPassword } = req.body;
   const { userId, verifyCode } = req.query;
   try {
     const [randomId, creationDate] = verifyCode.split("-D");

@@ -1,19 +1,14 @@
 import { Request, Response } from "express";
-import { rmSync } from "fs";
 import { StatusCodes } from "http-status-codes";
 import { nanoidCustom } from "../models/user.model";
 import {
-  ChangeUserPassSchema,
   CreateUserWithPassSchema,
   ReqForLoginLinkSchema,
-  VerifyUserWithLinkSchema,
 } from "../schemas/user.schema";
-import {
-  createUser,
-  findOneUserAndUpdate,
-  findUser,
-} from "../services/user.service";
-import timeValidation from "../utils/timeValidation";
+import { createUser, findOneUserAndUpdate } from "../services/user.service";
+import sendEmail from "../utils/mailSender";
+import config from "config";
+import mailPayload from "../utils/mailPayload";
 
 export const registerUserWithPassHandler = async (
   req: Request<{}, {}, Omit<CreateUserWithPassSchema, "confirmPassword">, {}>,
@@ -22,7 +17,17 @@ export const registerUserWithPassHandler = async (
   try {
     const newUser = await createUser(req.body);
     // sendEamil
-
+    const payload = mailPayload({
+      from: config.get("smtp.user"),
+      to: newUser.email,
+      subject: "verify Accout",
+      userId: newUser._id,
+      verifyCode: newUser.validationCode,
+      link: ` ${config.get("serverEndpoint")}/api/auth/?userId=${
+        newUser._id as string
+      }&verifyCode=${newUser.validationCode as string}`,
+    });
+    await sendEmail(payload);
     return res.status(201).send("User created successfully!");
   } catch (err: any) {
     if (err.code === 11000)
@@ -32,7 +37,7 @@ export const registerUserWithPassHandler = async (
   }
 };
 
-export const createUserWithEmailOrReqForLinkHandler = async (
+export const reqForLinkHandler = async (
   req: Request<{}, {}, {}, ReqForLoginLinkSchema>,
   res: Response
 ) => {
@@ -42,11 +47,24 @@ export const createUserWithEmailOrReqForLinkHandler = async (
       { email },
       {
         email,
-        $set: { validationCode: () => `${nanoidCustom()}-D${new Date()}` },
+        $set: { validationCode: `${nanoidCustom()}-D${Date.now()}` },
       },
       { new: true, upsert: true }
     );
     // send email
+    if (!user) return res.sendStatus(StatusCodes.NOT_FOUND);
+
+    const payload = mailPayload({
+      from: config.get("smtp.user"),
+      to: user?.email,
+      subject: "Sign in link",
+      userId: user?._id,
+      verifyCode: user?.validationCode,
+      link: ` ${config.get("serverEndpoint")}/api/auth/?userId=${
+        user._id as string
+      }&verifyCode=${user.validationCode as string}`,
+    });
+    await sendEmail(payload);
     return res.status(StatusCodes.ACCEPTED).send("Email has been sent!");
   } catch (err: any) {
     return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);

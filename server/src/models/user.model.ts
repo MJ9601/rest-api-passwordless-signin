@@ -43,7 +43,7 @@ export class User {
   @prop({ default: false })
   profileVerified: boolean;
 
-  @prop({ default: () => `${nanoidCustom()}-D${new Date()}` })
+  @prop({ default: () => `${nanoidCustom()}-D${Date.now()}` })
   validationCode: string;
 
   async validatePassword(this: DocumentType<User>, passwordOnReq: string) {

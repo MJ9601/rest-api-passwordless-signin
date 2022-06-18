@@ -12,7 +12,7 @@ const server = () => {
   app.use(cookieParser());
   app.use(
     cors({
-      origin: config.get("origin"),
+      origin: "*" || config.get("origin"),
       credentials: true,
     })
   );
