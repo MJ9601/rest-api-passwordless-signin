@@ -1,0 +1,330 @@
+{
+	"info": {
+		"_postman_id": "5c6d2385-649d-49c7-b394-f44a28b1936c",
+		"name": "restApiMailCon",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12708674"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "create user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.environment.set(\"email\", pm.collectionVariables.get(\"email\"));\r",
+									"pm.environment.set(\"name\", pm.collectionVariables.get(\"name\"));\r",
+									"pm.environment.set(\"password\", pm.collectionVariables.get(\"password\"));\r",
+									"pm.environment.set(\"newPassword\", pm.collectionVariables.get(\"newPassword\"));\r",
+									"pm.environment.set(\"endPoint\", pm.collectionVariables.get(\"endPoint\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\":  \"{{name}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\",\r\n    \"confirmPassword\":\"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endPoint}}/api/users",
+							"host": [
+								"{{endPoint}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "request for link",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{endPoint}}/api/users?email={{email}}",
+							"host": [
+								"{{endPoint}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "{{email}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get me",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var resJson = pm.response.json()\r",
+									"\r",
+									"\r",
+									"pm.environment.set(\"userId\", resJson._id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endPoint}}/api/users/me",
+							"host": [
+								"{{endPoint}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "sessions",
+					"item": [
+						{
+							"name": "delete session (log out)",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{endPoint}}/api/sessions",
+									"host": [
+										"{{endPoint}}"
+									],
+									"path": [
+										"api",
+										"sessions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create session with password (login)",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{endPoint}}/api/sessions",
+									"host": [
+										"{{endPoint}}"
+									],
+									"path": [
+										"api",
+										"sessions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all active session (logged in)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{endPoint}}/api/sessions",
+									"host": [
+										"{{endPoint}}"
+									],
+									"path": [
+										"api",
+										"sessions"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "change password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"newPassword\":\"{{newPassword}}\",\r\n    \"confirmPassword\": \"{{newPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{endPoint}}/api/auth?userId=62ae363d8584ac3d492854d4&verifyCode=8n0QRowoxC-D1655585441335",
+							"host": [
+								"{{endPoint}}"
+							],
+							"path": [
+								"api",
+								"auth"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "62ae363d8584ac3d492854d4"
+								},
+								{
+									"key": "verifyCode",
+									"value": "8n0QRowoxC-D1655585441335"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verify email or sign in without password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonRes = JSON.parse(responseBody);\r",
+									"console.log(jsonRes);\r",
+									"pm.environment.set(\"accessToken\", jsonRes.accessToken)\r",
+									"pm.environment.set(\"refreshToken\", jsonRes.refreshToken)\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{endPoint}}/api/auth?userId=62ae21ea9f255c1ef91cd109&verifyCode=6yozSj3nFg-D1655580366836",
+							"host": [
+								"{{endPoint}}"
+							],
+							"path": [
+								"api",
+								"auth"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "62ae21ea9f255c1ef91cd109"
+								},
+								{
+									"key": "verifyCode",
+									"value": "6yozSj3nFg-D1655580366836"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "email",
+			"value": "jane.doe@email.com",
+			"type": "string"
+		},
+		{
+			"key": "name",
+			"value": "jane doe",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "password12",
+			"type": "string"
+		},
+		{
+			"key": "newPassword",
+			"value": "newPassword",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "userid",
+			"type": "string"
+		},
+		{
+			"key": "verifyCode",
+			"value": "verifyCode",
+			"type": "string"
+		},
+		{
+			"key": "endPoint",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
