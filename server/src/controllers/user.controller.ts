@@ -75,3 +75,6 @@ export const reqForLinkHandler = async (
     return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
+
+export const getMe = async (req: Request, res: Response) =>
+  res.send(res.locals.user);

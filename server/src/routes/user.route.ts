@@ -1,9 +1,11 @@
 import express, { Request, Response } from "express";
 import {
+  getMe,
   registerUserWithPassHandler,
   reqForLinkHandler,
 } from "../controllers/user.controller";
 import reqValidation from "../middlewares/requestValidation";
+import requiredUser from "../middlewares/requiredUser";
 import {
   createUserWithPassSchema,
   reqForLoginLinkSchema,
@@ -22,4 +24,5 @@ router.put(
   reqForLinkHandler
 );
 
+router.get("/api/users/me", requiredUser, getMe);
 export default router;

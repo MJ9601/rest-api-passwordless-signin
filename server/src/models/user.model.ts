@@ -22,13 +22,17 @@ export const nanoidCustom = customAlphabet(pickUpString, 10);
     allowMixed: Severity.ALLOW,
   },
 })
-@pre<User>("save", async function () {
-  if (!this.isModified("password")) return;
+@pre<User>("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
-  const hash = await argon2.hash(this.password);
-  this.password = hash;
-
-  return;
+  try {
+    const hash = await argon2.hash(this.password);
+    this.password = hash;
+    return next();
+  } catch (err: any) {
+    logger.error(err);
+    return next(err);
+  }
 })
 export class User {
   @prop({ required: true, unique: true, lowercase: true })

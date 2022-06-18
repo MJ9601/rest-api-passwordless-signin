@@ -40,9 +40,6 @@ export const changeUserPassSchema = object({
     verifyCode: string({ required_error: "code is required!" }),
   }),
   body: object({
-    oldPassword: string({ required_error: "password is required!" })
-      .min(6, "minimum length of password is 6 chars")
-      .optional(),
     newPassword: string({ required_error: "password is required!" }).min(
       6,
       "minimum length of password is 6 chars"

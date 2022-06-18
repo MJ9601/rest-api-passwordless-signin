@@ -28,7 +28,7 @@ export const validUserPassword = async ({
     if (!user) return false;
     const isValid = await user.validatePassword(password);
 
-    return !isValid ? false : true;
+    return !isValid ? false : user.toJSON();
   } catch (err: any) {
     return false;
   }
